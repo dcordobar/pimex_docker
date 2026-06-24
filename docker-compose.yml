@@ -1,0 +1,40 @@
+name: pimex
+services:
+  db:
+    image: pgvector/pgvector:pg18
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: pimex_dev
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  pim:
+    build: ./pimex/
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      ICECAT_USERNAME: ${ICECAT_USERNAME}
+      ICECAT_PASSWORD: ${ICECAT_PASSWORD}
+    volumes:
+      - ./pimex/icecat_data:/app/icecat_data
+    ports:
+      - 4000:4000
+
+  pim_ml:
+    build: ./pimex_ml/
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      HF_TOKEN: ${HF_TOKEN}
+    ports:
+      - 8000:8000
+
+volumes:
+  db_data:
